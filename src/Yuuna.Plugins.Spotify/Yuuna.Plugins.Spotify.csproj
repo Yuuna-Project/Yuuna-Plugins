@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
+    <Authors>Yuuna-Project@Orlys</Authors>
+    <Company>Yuuna-Project</Company>
+    <Product />
+    <Copyright>Copyright © Yuuna-Project 2020</Copyright>
+    <Description>Spotify Web Control Plugin For Yuuna.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SpotifyAPI.Web.Auth" Version="4.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Yuuna.Common">
+      <HintPath>..\..\..\Yuuna\src\Yuuna\bin\Release\netcoreapp3.0\Yuuna.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Yuuna.Contracts">
+      <HintPath>..\..\..\Yuuna\src\Yuuna\bin\Release\netcoreapp3.0\Yuuna.Contracts.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
