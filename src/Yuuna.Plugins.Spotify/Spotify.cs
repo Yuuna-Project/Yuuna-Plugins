@@ -15,14 +15,16 @@ namespace Yuuna.Plugins.Spotify
     using Yuuna.Contracts.Modules;
     using Yuuna.Contracts.Patterns;
     using Yuuna.Contracts.Semantics;
+    using Yuuna.Contracts.Utils;
 
-    [ModuleMetadata("Spotify Web Control Plugin For Yuuna",
+
+    [ModuleMetadata("Spotify",
         Author = "Yuuna-Project@Orlys", 
         Description = "Provides control support for Spotify",
         Url = "https://github.com/Yuuna-Project/Yuuna-Plugins")]
     public sealed class Spotify : ModuleBase
     {
-        private readonly SpotifyWebAPI _api ;
+        private volatile SpotifyWebAPI _api ;
 
         private readonly AuthorizationCodeAuth _auth; 
         private Token _token;
@@ -39,11 +41,18 @@ namespace Yuuna.Plugins.Spotify
                 Encoding.Unicode.GetString(Convert.FromBase64String("MQAwADcAMgA4AGMAZgA0ADEAZgBhADEANAA3ADMAZgA4AGYANAA3AGMAOAAxADcAZABlAGUAZAAzAGMANQBhAA==")),
                 Encoding.Unicode.GetString(Convert.FromBase64String("OQA4ADIANAAxAGUANABiADYAMwAxAGIANAAyAGEANABhADQAMgA2ADMAYwAwADQAMAAzAGQANwA4ADgAMABiAA==")),
                 url, url, scopes);
-            this._auth.AuthReceived += (sender, payload) => 
+
+            this._auth.AuthReceived += async (sender, payload) =>
             {
-                var auth = (AuthorizationCodeAuth)sender;
-                auth.Stop();
-                this._token = auth.ExchangeCode(payload.Code).Result;
+                this._auth.Stop();
+                if (this._token.IsExpired())
+                    this._token = await this._auth.RefreshToken(this._token.RefreshToken);
+                this._token = await this._auth.ExchangeCode(payload.Code);
+                this._api = new SpotifyWebAPI()
+                {
+                    TokenType = this._token.TokenType,
+                    AccessToken = this._token.AccessToken
+                };
             };
 
             this._auth.Start();
@@ -66,11 +75,11 @@ namespace Yuuna.Plugins.Spotify
 
             g.Define("next").AppendOrCreate(new[] { "下一首" });
             g.Define("previous").AppendOrCreate(new[] { "上一首" });
-            g.Define("song").AppendOrCreate(new[] { "歌", "歌曲", "曲目",  "樂曲", "音樂" }); 
+            g.Define("song").AppendOrCreate(new[] { "歌", "歌曲", "曲目", "樂曲", "音樂" });
 
-            var pause = new Invoke(m =>
+            Invoke pause = m =>
             {
-                this.CheckToken().Wait();
+                Task.WaitAll(this.CheckToken());
 
                 var er = this._api.PausePlayback();
                 if (er.HasError())
@@ -78,14 +87,14 @@ namespace Yuuna.Plugins.Spotify
                     return (Moods.Sad, er.Error.Message);
                 }
                 return (Moods.Happy, "已暫停播放");
-            });
+            };
 
             p.Build(g["pause"], g["play"]).OnInvoke(pause);
-            p.Build(g["pause"], g["song"]).OnInvoke(pause); 
+            p.Build(g["pause"], g["song"]).OnInvoke(pause);
 
-            var resume = new Invoke(m =>
+            Invoke resume = m =>
             {
-                this.CheckToken().Wait();
+                Task.WaitAll(this.CheckToken());
 
                 var er = this._api.ResumePlayback(offset: default(int?));
                 if (er.HasError())
@@ -93,44 +102,38 @@ namespace Yuuna.Plugins.Spotify
                     return (Moods.Sad, er.Error.Message);
                 }
                 return (Moods.Happy, "已繼續播放");
-            });
+            };
             p.Build(g["play"], g["song"]).OnInvoke(resume);
             p.Build(g["resume"], g["play"]).OnInvoke(resume);
             p.Build(g["resume"], g["play"], g["song"]).OnInvoke(resume);
 
 
-            var next = new Invoke(m =>
+            Invoke next = m =>
             {
-                this.CheckToken().Wait();
+                Task.WaitAll(this.CheckToken());
 
                 var er = this._api.SkipPlaybackToNext();
                 if (er.HasError())
                 {
                     return (Moods.Sad, er.Error.Message);
                 }
-                return (Moods.Happy, "已經切換至下一首囉");
-            });
+                return (Moods.Happy, "已經換至下一首囉");
+            };
             p.Build(g["play"], g["next"]).OnInvoke(next);
             p.Build(g["play"], g["next"], g["song"]).OnInvoke(next); 
-            p.Build(g["next"], g["song"]).OnInvoke(next); 
+            p.Build(g["next"], g["song"]).OnInvoke(next);
 
 
-            var previous = new Invoke(m =>
-            {
-                this.CheckToken().Wait();
-
+            new Invoke(m => {
+                Task.WaitAll(this.CheckToken());
                 var er = this._api.SkipPlaybackToPrevious();
-                if (er.HasError())
-                {
-                    return (Moods.Sad, er.Error.Message);
-                }
-                return (Moods.Happy, "已經返回到上一首囉");
-            });
-            p.Build(g["play"], g["previous"]).OnInvoke(next);
-            p.Build(g["play"], g["previous"], g["song"]).OnInvoke(next); 
-            p.Build(g["previous"], g["song"]).OnInvoke(previous); 
+                return er.HasError() ?
+                    (Moods.Sad, er.Error.Message) : 
+                    (Moods.Happy, "已經回到上一首囉"); 
+            }).InvokeWith(
+                p.Build(g["play"], g["previous"]),
+                p.Build(g["play"], g["previous"], g["song"]),
+                p.Build(g["previous"], g["song"])); 
         }
-    }
-
-     
+    } 
 }

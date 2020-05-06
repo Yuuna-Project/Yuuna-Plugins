@@ -7,14 +7,9 @@
     <StartupObject />
     <Authors>Yuuna-Project@Orlys</Authors>
     <Company>Yuuna-Project</Company>
-    <Product />
+    <Description>Provides a universal control relay interface for Yuuna call and control software and hardware</Description>
     <Copyright>Copyright © Yuuna-Project 2020</Copyright>
-    <Description>Spotify Web Control Plugin For Yuuna.</Description>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="SpotifyAPI.Web.Auth" Version="5.1.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Yuuna.Common">

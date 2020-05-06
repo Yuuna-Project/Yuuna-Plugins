@@ -5,6 +5,14 @@ VisualStudioVersion = 16.0.29503.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yuuna.Plugins.Spotify", "src\Yuuna.Plugins.Spotify\Yuuna.Plugins.Spotify.csproj", "{AA8C575A-7EE2-4F2F-8F91-62B068C9A083}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yuuna.Plugins.RelayHub", "src\Yuuna.Plugins.RelayHub\Yuuna.Plugins.RelayHub.csproj", "{27062B3C-44A9-42AC-94FE-CA82C5904ED8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0F8C2702-B1F4-4BA8-8891-3AED04C64E6B}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +23,10 @@ Global
 		{AA8C575A-7EE2-4F2F-8F91-62B068C9A083}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA8C575A-7EE2-4F2F-8F91-62B068C9A083}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA8C575A-7EE2-4F2F-8F91-62B068C9A083}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27062B3C-44A9-42AC-94FE-CA82C5904ED8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27062B3C-44A9-42AC-94FE-CA82C5904ED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27062B3C-44A9-42AC-94FE-CA82C5904ED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27062B3C-44A9-42AC-94FE-CA82C5904ED8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
